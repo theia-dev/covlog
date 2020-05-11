@@ -1,0 +1,13 @@
+Flask
+Flask-Admin
+Flask-BabelEx
+Flask-Bootstrap
+Flask-Login
+Flask-Moment
+Flask-QRcode
+Flask-Security
+Flask-SQLAlchemy
+email-validator
+itsdangerous
+Jinja2
+python-telegram-handler
