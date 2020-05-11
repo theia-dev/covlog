@@ -15,8 +15,9 @@ from .. import admin, models, tex_env
 
 
 def get_qr_pdf(data):
-    build_folder = current_app.config['BUILD_FOLDER'] / f'{data["type"]}_{data["name"]}'
+
     sec_name = secure_filename(data['name'])
+    build_folder = current_app.config['BUILD_FOLDER'] / f'{data["type"]}_{sec_name}'
     final_pdf = build_folder / f"{sec_name}.pdf"
     if final_pdf.is_file():
         return final_pdf
