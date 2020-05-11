@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <div class="content">
+            <h2 class="content-head is-center">Client Overview</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="is-center noprint">
+                        <div class="pure-u-1-2">
+                            {% for category, message in messages %}
+                                <div class="pure-alert pure-alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <div class="pure-g client-info">
+                <div class="pure-u-1 noprint is-center">
+                    <p>Please print this page for your documents or note down your client token.</p>
+                </div>
+                <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+                    <h3>Data</h3>
+                    <ul>
+                        <li>Token: {{ client.token }}</li>
+                        {% if client.name %}
+                            <li>Name: {{ client.name }}</li>
+                        {% endif %}
+                        <li>Group: {{ client.group.name }}</li>
+                        <li>Group token: {{ client.group.token }}</li>
+                        <li>Locations: {{ ", ".join(client.location_codes) }}</li>
+                    </ul>
+                </div>
+
+                <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+                    <h3>Quick Login QR</h3>
+                    <img class="pure-img-responsive" src="{{ qrcode(url_for('main.quick_login', token=client.get_auth_token(), _external=True), box_size=5)  }}" alt="Quick Login QR code">
+                </div>
+
+                <div class="l-box pure-u-1 noprint" style="text-align: center">
+                    <a href="{{ url_for('main.index') }}" class="pure-button pure-button-client">Home</a>
+                    <a href="#" class="pure-button pure-button-client">Edit</a>
+                    <a href="{{ url_for('main.logout') }}" class="pure-button pure-button-client">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

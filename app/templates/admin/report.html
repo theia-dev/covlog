@@ -1,0 +1,83 @@
+{% extends 'admin/master.html' %}
+
+{% block  head_css %}
+    {{ super() }}
+    <link href="/admin/static/vendor/select2/select2.css?v=3.5.2" rel="stylesheet">
+    <link href="/admin/static/vendor/select2/select2-bootstrap3.css?v=1.4.6" rel="stylesheet">
+    <link href="/admin/static/vendor/bootstrap-daterangepicker/daterangepicker-bs3.css?v=1.3.22" rel="stylesheet">
+{% endblock %}
+
+{% block tail_js %}
+    {{ super() }}
+    <script src="/admin/static/vendor/bootstrap-daterangepicker/daterangepicker.js?v=1.3.22"></script>
+    <script src="/admin/static/admin/js/form.js?v=1.0.1"></script>
+{% endblock %}
+
+{% block body %}
+    {{ super() }}
+    <div class="container col-md-offset-1">
+        <div class="container">
+
+            <h3>Basic Reports</h3>
+            <a href="#"><button type="button" class="btn btn-primary">Overview</button></a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Locations <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu">
+                    {% for entry in l_list %}
+                        <li><a href="#" name="{{ entry[0] }}">{{ entry[1] }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Groups <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu">
+                    {% for entry in g_list %}
+                        <li><a href="#" name="{{ entry[0] }}">{{ entry[1] }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <h3>Tracing Reports</h3>
+            <form class="form-inline">
+                <div class="form-group mb-3">
+                    <label for="client-token" class="sr-only">Client Token</label>
+                    <div>
+                        <select class="form-control" data-role="select2" id="client-token" name="client-token" style="width: 100%">
+                            {% for entry in c_list %}
+                                <option value="{{ entry[0] }}">{{ entry[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="date_trace" class="sr-only">Trace Date</label>
+                    <div>
+                        <input class="form-control" data-date-format="YYYY-MM-DD" data-role="datepicker" id="date_trace" name="date_trace" type="text" placeholder="Date">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Trace Client</button>
+            </form><br>
+            <form class="form-inline">
+                <div class="form-group mb-3">
+                    <label for="locations" class="sr-only">Locations</label>
+                    <div>
+                        <select class="form-control" data-role="select2" id="locations" name="locations" style="width: 100%">
+                            {% for entry in l_list %}
+                                <option value="{{ entry[0] }}">{{ entry[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="date_trace" class="sr-only">Trace Date</label>
+                    <div>
+                        <input class="form-control" data-date-format="YYYY-MM-DD" data-role="datepicker" id="date_trace" name="date_trace" type="text" placeholder="Date">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">Trace Location</button>
+            </form>
+        </div>
+    </div>
+{% endblock body %}

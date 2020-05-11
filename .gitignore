@@ -1,0 +1,4 @@
+/app/build/
+/app/db/
+/log/
+/user_config.py

@@ -1,0 +1,45 @@
+
+% Preamble
+\documentclass[a4paper,12pt]{article}
+
+% Packages
+\usepackage{tikz}
+\usepackage{DejaVuSansCondensed}
+\renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
+\usepackage[T1]{fontenc}
+\usepackage[nohead,nofoot]{geometry}
+\usepackage{fontawesome5}
+\usetikzlibrary{calc}
+\usepackage[]{qrcode}
+
+
+\definecolor{exit}{HTML}{800000}
+\definecolor{enter}{HTML}{008000}
+
+% Document
+\begin{document}
+  \thispagestyle{empty}
+
+  \begin{tikzpicture}[remember picture,overlay]
+
+    \node[inner sep=0pt, anchor=north] (h1) at ([yshift=-45mm] current page.north)  {\fontsize{40}{48} \selectfont \textcolor{enter}{\faIcon{sign-in-alt}} \VAR{name} };
+    \node[inner sep=0pt, anchor=north] (h1) at ([yshift=-60mm] current page.north)  {\huge \VAR{long_name}};
+
+    \node[inner sep=0pt, anchor=north] (qr) at  ([yshift=-120mm] current page.north) {\qrcode*[height=8cm]{\VAR{qr_code}}};
+    \node[inner sep=0pt, anchor=north] (h1) at ([yshift=-205mm] current page.north)  {\huge scan to enter};
+
+    \draw[line width=3mm, color=enter] ([yshift=-110mm, xshift=-55mm] current page.north) -- ([yshift=-210mm, xshift=-55mm] current page.north);
+    \draw[line width=3mm, color=enter] ([yshift=-110mm, xshift=55mm] current page.north) -- ([yshift=-210mm, xshift=55mm] current page.north);
+    \draw[line width=3mm, color=enter] ([yshift=30mm] current page.south west) -- ([yshift=30mm] current page.south east);
+
+    \node[inner sep=0pt, anchor= west, align=left] (h1) at ([yshift=15mm, xshift=10mm] current page.south west)  {
+      \large Scan this QR-code to \textbf{\textcolor{enter}{\faIcon{sign-in-alt} enter}} \VAR{name}. \\
+      \large When you leave scan a \textbf{\textcolor{exit}{exit \faIcon{sign-out-alt}}} poster.
+    };
+    \node[inner sep=0pt, anchor= east, align=left] (h1) at ([yshift=15mm, xshift=-10mm] current page.south east)  {
+      \large Manual URL to \textbf{\textcolor{enter}{\faIcon{sign-in-alt} enter}}:\\
+      \large \VAR{qr_code}};
+
+  \end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <div class="content is-center">
+            <h2 class="content-head is-center">Register</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="pure-u-1-2">
+                        {% for category, message in messages %}
+                            <div class="pure-alert pure-alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                {% endif %}
+            {% endwith %}
+            <form class="pure-form pure-form-aligned" method=post action="">
+                <fieldset>
+                    {% if rtype == 'normal' %}
+                        <div class="pure-control-group">
+                            <label for="group-token">Group Token</label>
+                            <input type="text" id="group-token" name="group-token" placeholder="Group Token" required="">
+                        </div>
+                    {% endif %}
+                    <div class="pure-control-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" placeholder="Name (optional)" />
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="Email (optional)" />
+                    </div>
+                    <div class="pure-controls">
+                        <input type=submit class="pure-button pure-button-primary" value="Submit">
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+{% endblock %}

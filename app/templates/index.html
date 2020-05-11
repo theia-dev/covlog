@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="splash-container">
+        <div class="splash">
+            <h1 class="splash-head">COVLOG</h1>
+            <p class="splash-subhead">
+                A distanced logbook! <br> {{ orga_name }}
+            </p>
+            <p>
+                {% if client %}
+                    <a href="{{ url_for('main.log_event') }}" class="pure-button pure-button-primary">Log Event</a>
+                    <a href="{{ url_for('main.client_hub') }}" class="pure-button pure-button-primary">Client</a>
+                {% else %}
+                    <a href="{{ url_for('main.login') }}" class="pure-button pure-button-primary">Login</a>
+                    <a href="{{ url_for('main.register') }}" class="pure-button pure-button-primary">Register</a>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="pure-u-1 is-center">
+                    {% for category, message in messages %}
+                        <div class="pure-alert pure-alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div class="content">
+            <h2 class="content-head is-center">About COVLOG</h2>
+
+            <div class="pure-g">
+                <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+
+                    <h3 class="content-subhead">
+                        {#                    <i class="fa fa-rocket"></i>#}
+                        Basics
+                    </h3>
+                    <p>
+                        When you register yourself with the shared secret, a unique token is generated for you and stored on your device. Please note down your ID code. This code is also needed if to reconnect or change your device.
+                    </p>
+                </div>
+                <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                    <h3 class="content-subhead">
+                        {#                    <i class="fa fa-mobile"></i>#}
+                        QR Codes
+                    </h3>
+                    <p>
+                        Once you are registered in COVLOG you can simply scan the ENTER or EXIT QR codes. You can also manual log your activities on this page.
+                    </p>
+                </div>
+                <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                    <h3 class="content-subhead">
+                        {#                    <i class="fa fa-th-large"></i>#}
+                        Privacy
+                    </h3>
+                    <p>
+                        While it is possible to inform people using the ID codes, it is possible quicker if you provide some additional information. You can edit your profile here.
+                    </p>
+                </div>
+                <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-4">
+                    <h3 class="content-subhead">
+                        {#                    <i class="fa fa-github"></i>#}
+                        Software
+                    </h3>
+                    <p>
+                        Developed at the <a href="https://nano.tu-dresden.de">Chair of Materials Science and Nanotechnology</a> (<a href="https://tu-dresden.de">TU Dresden</a>) in 2020 with python. Please be aware this web service is still in a beta stage. There could be missing functionality and undocumented behavior. If you have feedback to improve the service please add an issue in the <a href="https://github.com">github project</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

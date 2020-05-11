@@ -1,0 +1,27 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    {{ super() }}
+    <div class="container col-md-offset-1">
+        <div class=" page-header">
+            <h1>COVLOG<sup>&nbsp;<span class="glyphicon glyphicon-list-alt"></span></sup></h1>
+        </div>
+        {% if not current_user.is_authenticated %}
+            <div class="container">
+                <p>Behind this login is only the administrative area of COVLOG.</p>
+                <p>
+                    <a class="btn btn-primary" href="{{ url_for('main.index') }}">Return Home</a>
+                    <a class="btn btn-success" href="{{ url_for('security.login') }}">Login</a>
+                </p>
+            </div>
+        {% else %}
+            <div class="container">
+            <p>You are logged in. Please proceed with care!</p>
+            <p>
+                <a class="btn btn-primary" href="{{ url_for('main.index') }}">Return Home</a>
+                <a class="btn btn-danger" href="{{ url_for('security.logout') }}">Logout</a>
+            </p>
+        {% endif %}
+        </div>
+    </div>
+{% endblock body %}

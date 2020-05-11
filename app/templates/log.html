@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+    {% import 'macros.html' as helper %}
+    {% set group = client.group %}
+
+    <div class="l-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="is-center" style="padding-top: 0.5em">
+                    <div class="pure-u-1-2">
+                        {% for category, message in messages %}
+                            <div class="pure-alert pure-alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="logging-tables pure-g" style="justify-content: center;">
+            {% if log_limit %}
+                {{ helper.loc_table(log_limit, client) }}
+            {% else %}
+                {% for location in group.locations %}
+                    {{ helper.loc_table(location, client) }}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

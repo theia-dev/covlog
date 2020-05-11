@@ -1,0 +1,14 @@
+{% extends 'admin/master.html' %}
+
+
+{% block body %}
+    {{ super() }}
+    <div class="container col-md-offset-1">
+        <div class="container">
+            <h3>{{ qr_type }}: {{ qr_name }}</h3>
+            <img class="pure-img-responsive" src="{{ qrcode(qr_code, box_size=5, border=5)  }}" alt="Quick Login QR code"><br>
+            <a href="{{ url_for('qr.index') }}"><button type="button" class="btn btn-info"><span class="glyphicon glyphicon-chevron-left"></span> Back</button></a>
+            <a href="{{ pdf }}"><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-file"></span> PDF</button></a>
+        </div>
+    </div>
+{% endblock body %}

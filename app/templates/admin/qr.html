@@ -1,0 +1,30 @@
+{% extends 'admin/master.html' %}
+
+
+{% block body %}
+    {{ super() }}
+    <div class="container col-md-offset-1">
+        <div class="container">
+            <h3>Generate QR Codes</h3>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Enter Locations <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu">
+                    {% for entry in l_list %}
+                        <li><a href="{{ url_for('qr.location', location_id=entry[0]) }}">{{ entry[1] }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <a href="{{ url_for('qr.exit') }}"><button type="button" class="btn btn-primary">Exit Locations</button></a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                    Register in Group <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu">
+                    {% for entry in g_list %}
+                        <li><a href="{{ url_for('qr.group', group_id=entry[0]) }}">{{ entry[1] }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock body %}

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="COVLOG - A distanced logbook!">
+    <title>COVLOG</title>
+    <link rel="stylesheet" href="/static/layouts/pure/pure-min.css">
+    <link rel="stylesheet" href="/static/layouts/pure/grids-responsive-min.css">
+    <link rel="stylesheet" href="/static/layouts/pure/forms-min.css">
+    <link rel="stylesheet" href="/static/layouts/covlog.css">
+</head>
+<body>
+
+{% block content %}
+
+{% endblock %}
+
+{% block footer %}
+    <div class="footer l-box is-center noprint">
+        <a href="/">COVLOG</a> | {{ orga_name }} | Version: {{ version }} | {% if client %} <a href='{{ url_for('main.client_hub') }}'>Client Area</a> |{% endif %} <a href='{{ url_for('admin.index') }}'>Admin Area</a>
+    </div>
+    <div class="footer l-box is-center justprint">
+        COVLOG | {{ orga_name }} | Version: {{ version }} | Date: {{ today }}
+    </div>
+{% endblock %}
+
+</body>
+</html>

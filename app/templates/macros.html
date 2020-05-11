@@ -1,0 +1,47 @@
+{% macro loc_table(location, client) %}
+<div class="pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+    <div class="logging-table">
+        {% set count_style = '' %}
+        {% if location.usage >= location.capacity %}
+            {% set count_style = 'background: #FA4224;' %}
+        {% endif %}
+        <div class="logging-table-header" style="{{ count_style }}">
+                        <span class="logging-table-count">
+                            {{ location.code }}
+                            <span class='logging-table-count'>{{ location.usage }}/{{ location.capacity }}</span>
+                        </span>
+        </div>
+        <ul class="logging-table-list">
+            {% if location.name %}
+                <li>{{ location.name }}</li>
+            {% endif %}
+            <li>{{ location.address }}</li>
+            <li><a href="mailto:{{ location.email }}">{{ location.responsible }}</a></li>
+        </ul>
+        {% set present, present_location = client.is_present(True)  %}
+        {% if not present %}
+            {% if location.usage < location.capacity %}
+                <form method=post action="{{ url_for('main.log_enter_now') }}">
+                    <input id="location_code" name="location_code" type="hidden" value="{{ location.code }}">
+                    <input type=submit class="pure-button button-in" value="ENTER">
+                </form>
+            {% else %}
+                <div class="no-button">
+                    <p>This location is at capacity. Please do not enter!</p>
+                </div>
+            {% endif %}
+        {% else %}
+            {% if present_location.id == location.id %}
+                <form method=post action="{{ url_for('main.log_exit') }}">
+                    <input id="location_code" name="location_code" type="hidden" value="{{ location.code }}">
+                    <input type=submit class="pure-button button-out" value="EXIT">
+                </form>
+            {% else %}
+                <div class="no-button">
+                    <p>You need to leave {{ present_location.code }} before you can enter {{ location.code }}.</p>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
