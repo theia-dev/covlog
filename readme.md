@@ -33,8 +33,9 @@ COVLOG is a simple web tool to trace people across multiple locations with priva
 #!/bin/bash
 git log -1 > /var/www/covlog/covlog/version.txt
 chown -R flask:www-data /var/www/covlog/covlog/
-service apache2 reload
+touch /var/www/covlog/covlog/covlog.wsgi
 ```
+* make executable ```chmod +x .git/hooks/post-merge```
 
 ### Set up Apache
 * Create config files ```covlog.conf``` 
