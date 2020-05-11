@@ -5,14 +5,15 @@ COVLOG is a simple web tool to trace people across multiple locations with priva
 ## Setup
 ### Preparation
 * Using Apache [mod_wsgi](https://flask.palletsprojects.com/en/1.1.x/deploying/mod_wsgi/)
-* install wsgi `apt-get install libapache2-mod-wsgi-py3`
+* install wsgi `sudo apt-get install libapache2-mod-wsgi-py3`
 * enable the mod `sudo a2enmod wsgi`
-* install python3 `apt-get install python3.4` (or higher)
-* install virtual environment `apt-get install sudo apt-get install python-virtualenv`
-* install git `apt-get install git`
+* install python3 `sudo apt install python3` (3.4 or higher)
+* install virtual environment `sudo apt-get install python-virtualenv`
+* install git `sudo apt install git`
 * create flask user `sudo useradd -r -s /bin/false flask`
 * create flask users home `sudo mkdir /home/flask`
 * set rights on folder `sudo chown flask:www-data /home/flask`
+* install xelatex from tex-live `sudo aptinstall texlive-full`
 
 
 ### Install the source
