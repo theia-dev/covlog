@@ -22,11 +22,16 @@ user_config = dict(
     SECURITY_PASSWORD_SALT="%s",
     SECRET_KEY='%s',
     SECRET_KEY_TOKEN='%s',
+    SERVER_NAME_PDF='%s',
+    ORGANIZATION_NAME='%s',
 )
 """
 
 user_config = basedir / 'user_config.py'
+
 if not user_config.is_file():
+    orga_name = input('Organization name:')
+    server_name = input('Short server name (PDF|QR):')
     print('Create user config template with random security keys')
     sps = os.urandom(128)
     sps = hashlib.md5(sps).hexdigest()
@@ -35,7 +40,7 @@ if not user_config.is_file():
     skt = os.urandom(128)
     skt = hashlib.md5(skt).hexdigest()
     with open(str(user_config), 'w') as user_config_file:
-        user_config_file.write(user_config_base % (sps, sk, skt))
+        user_config_file.write(user_config_base % (sps, sk, skt, server_name, orga_name))
 
 
 app = create_app()
@@ -52,6 +57,7 @@ with app.app_context():
     db.session.add(user_role)
     db.session.add(super_user_role)
     db.session.commit()
+    print('Set the password for the "admin" account')
     admin_key = getpass.getpass()
 
     test_user = user_data_store.create_user(

@@ -213,6 +213,7 @@ def log_enter(location_code):
 def log_exit():
     client = get_client()
     if not client:
+        flash('You need to be registered!', 'warning')
         return redirect(url_for('main.index'))
     if request.method == 'POST':
         if client is None:

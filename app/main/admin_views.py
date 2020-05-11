@@ -24,6 +24,7 @@ def get_qr_pdf(data):
     build_folder.mkdir(exist_ok=True, parents=True)
 
     template = tex_env.get_template(f'{data["type"]}.tex')
+
     content = template.render(**data)
 
     build_file = (build_folder / f"{sec_name}.tex")
@@ -213,8 +214,8 @@ class QRView(MyBaseView):
         data = dict(
             name=str(group),
             type='group',
-            qr_code=url_for('main.quick_register', token=group.get_auth_token(), _external=True),
-            url=url_for('main.index', _external=True)
+            qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_register', token=group.get_auth_token())}",
+            url=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_register', token=group.get_auth_token())}",
         )
         pdf_file = get_qr_pdf(data)
         if pdf_file:
@@ -229,8 +230,10 @@ class QRView(MyBaseView):
         data = dict(
             name=location.code,
             type='enter',
-            qr_code=url_for('main.log_enter', location_code=location.code, _external=True),
-            long_name=str(location)
+            qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_enter', location_code=location.code)}",
+            long_name=str(location),
+            url=f"{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_enter', location_code=location.code)}",
+
         )
         pdf_file = get_qr_pdf(data)
         if pdf_file:
@@ -244,8 +247,8 @@ class QRView(MyBaseView):
         data = dict(
             type='exit',
             name='all',
-            qr_code=url_for('main.log_exit', _external=True),
-            url=url_for('main.index', _external=True)
+            qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_exit')}",
+            url=f"{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_exit')}"
         )
         pdf_file = get_qr_pdf(data)
         if pdf_file:

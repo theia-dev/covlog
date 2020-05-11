@@ -9,7 +9,8 @@ basedir = Path(__file__).absolute().parent
 
 
 class Config:
-    ORGANIZATION_NAME = 'TUD NANO'
+    ORGANIZATION_NAME = 'ORGA'
+    SERVER_NAME_PDF = ''
 
     WTF_CSRF_ENABLED = True
     # This setting should be overridden in production in user_config.py
