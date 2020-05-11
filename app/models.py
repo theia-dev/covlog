@@ -66,7 +66,7 @@ class Client(db.Model):
     token = db.Column(db.String(6), unique=True, default=partial(create_token, length=6))
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
     name = db.Column(db.String(255))
-    email = db.Column(db.String(255), unique=True)
+    email = db.Column(db.String(255))
     active = db.Column(db.Boolean(), default=True)
     created = db.Column(db.TIMESTAMP, default=datetime.today())
     events = db.relationship('Event', backref='client')
