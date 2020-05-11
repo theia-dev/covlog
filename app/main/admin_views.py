@@ -231,7 +231,7 @@ class QRView(MyBaseView):
             name=location.code,
             type='enter',
             qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_enter', location_code=location.code)}",
-            long_name=str(location),
+            long_name=location.name_or_address,
             url=f"{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_enter', location_code=location.code)}",
 
         )

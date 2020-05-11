@@ -184,6 +184,15 @@ class Location(db.Model):
             l_list.append([location.id, value])
         return l_list
 
+    @property
+    def name_or_address(self):
+        if self.name:
+            return self.name
+        elif self.address:
+            return self.address
+        else:
+            return self.token
+
     def __repr__(self):
         if self.code:
             return self.code
