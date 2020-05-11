@@ -220,7 +220,7 @@ class QRView(MyBaseView):
         pdf_file = get_qr_pdf(data)
         if pdf_file:
             return send_file(str(pdf_file.absolute()), mimetype='application/pdf',
-                             attachment_filename=pdf_file.name, as_attachment=True)
+                             attachment_filename=f'covlog_group_{pdf_file.name}', as_attachment=True)
         else:
             flash('PDF build failed!', 'error')
             return redirect(url_for('qr.group', group_id=group_id))
@@ -239,7 +239,7 @@ class QRView(MyBaseView):
         pdf_file = get_qr_pdf(data)
         if pdf_file:
             return send_file(str(pdf_file.absolute()), mimetype='application/pdf',
-                             attachment_filename=pdf_file.name, as_attachment=True)
+                             attachment_filename=f'covlog_location_{pdf_file.name}', as_attachment=True)
         else:
             flash('PDF build failed!', 'error')
             return redirect(url_for('qr.location', loction_id=location_id))
@@ -255,7 +255,7 @@ class QRView(MyBaseView):
         pdf_file = get_qr_pdf(data)
         if pdf_file:
             return send_file(str(pdf_file.absolute()), mimetype='application/pdf',
-                             attachment_filename=pdf_file.name, as_attachment=True)
+                             attachment_filename=f'covlog_exit_{pdf_file.name}', as_attachment=True)
         else:
             flash('PDF build failed!', 'error')
             return redirect(url_for('qr.exit'))
