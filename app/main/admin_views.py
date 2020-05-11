@@ -215,7 +215,7 @@ class QRView(MyBaseView):
             name=str(group),
             type='group',
             qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_register', token=group.get_auth_token())}",
-            url=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_register', token=group.get_auth_token())}",
+            url=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.index')}",
         )
         pdf_file = get_qr_pdf(data)
         if pdf_file:
