@@ -37,57 +37,34 @@ service apache2 reload
 ```
 
 ### Set up Apache
+* Create config files ```covlog.conf``` 
+* Activate sites ```a2ensite covlog covlog-ssl```
+* Run ```letsencrypt``` and select the new page - choose "2: Redirect - Make all requests redirect to secure HTTPS access."
+
+
+
 covlog.conf
 ```apacheconf
-<VirtualHost *:80>
-	ServerName covlog.example.com
-    ServerAlias cl.example.com
-
-    ServerAdmin admin@example.com
-
-	Redirect permanent / https://covlog.example.com/
-</VirtualHost>
-```
-
-covlog-ssl.conf
-```apacheconf
 <IfModule mod_ssl.c>
-	<VirtualHost *:443>
-		ServerName covlog.example.com
-	    ServerAlias cv.example.com
+    <VirtualHost *:443>
+        ServerName covlog.example.com
+        ServerAlias cv.example.com
 
-	    ServerAdmin admin@example.com
+        ServerAdmin admin@example.com
 
-	   	WSGIDaemonProcess covlog user=flask group=www-data threads=10 python-home=/var/www/covlog/covlog_venv
+        WSGIDaemonProcess covlog user=flask group=www-data threads=10 python-home=/var/www/covlog/covlog_venv
+        WSGIProcessGroup covlog
+        WSGIApplicationGroup %{GLOBAL}
 
-		WSGIProcessGroup covlog
-	        WSGIApplicationGroup %{GLOBAL}
+        WSGIScriptAlias / /var/www/covlog/covlog/covlog.wsgi
 
-	    	WSGIScriptAlias / /var/www/quantup/covlog/covlog/covlog.wsgi
+        ErrorLog ${APACHE_LOG_DIR}/covlog_error.log
+        CustomLog ${APACHE_LOG_DIR}/covlog_access.log combined
 
-	       	ErrorLog ${APACHE_LOG_DIR}/covlog_ssl_error.log
-	        CustomLog ${APACHE_LOG_DIR}/covlog_ssl_access.log combined
+        <Directory /var/www/covlog/covlog>
+            Require all granted
+        </Directory>
 
-	    <Directory /var/www/covlog/covlog>
-			Require all granted
-	    </Directory>
-
-	    SSLEngine on
-
-		SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1
-        SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
-        SSLHonorCipherOrder     off
-        SSLSessionTickets       off
-
-	    SSLCertificateFile cert.pem
-	   	SSLCertificateKeyFile key.pem
-	    SSLCertificateChainFile chain.txt
-
-		BrowserMatch "MSIE [2-6]" \
-					nokeepalive ssl-unclean-shutdown \
-					downgrade-1.0 force-response-1.0
-		# MSIE 7 and newer should be able to use keepalive
-		BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
-	</VirtualHost>
+    </VirtualHost>
 </IfModule>
 ```
