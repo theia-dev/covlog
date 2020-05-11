@@ -68,7 +68,7 @@ class Client(db.Model):
     name = db.Column(db.String(255))
     email = db.Column(db.String(255))
     active = db.Column(db.Boolean(), default=True)
-    created = db.Column(db.TIMESTAMP, default=datetime.today())
+    created = db.Column(db.TIMESTAMP, default=datetime.today)
     events = db.relationship('Event', backref='client')
 
     def is_present(self, get_location=False):
@@ -124,7 +124,7 @@ class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(12), default=partial(create_token, length=12))
     name = db.Column(db.String(255))
-    created = db.Column(db.TIMESTAMP, default=datetime.today())
+    created = db.Column(db.TIMESTAMP, default=datetime.today)
     clients = db.relationship('Client', backref='group')
     locations = db.relationship('Location', secondary='group_location', back_populates='groups')
 
@@ -165,7 +165,7 @@ class Location(db.Model):
     responsible = db.Column(db.String(255))
     groups = db.relationship('Group', secondary='group_location', back_populates='locations')
     events = db.relationship('Event', backref='location')
-    created = db.Column(db.TIMESTAMP, default=datetime.today())
+    created = db.Column(db.TIMESTAMP, default=datetime.today)
 
     @property
     def usage(self):
@@ -212,7 +212,7 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     client_id = db.Column(db.Integer, db.ForeignKey('client.id'))
     location_id = db.Column(db.Integer, db.ForeignKey('location.id'))
-    date_in = db.Column(db.DateTime, default=datetime.now())
+    date_in = db.Column(db.DateTime, default=datetime.now)
     date_out = db.Column(db.DateTime, default=None)
     active = db.Column(db.Boolean, default=True)
     expired = db.Column(db.Boolean, default=False)
