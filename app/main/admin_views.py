@@ -9,6 +9,7 @@ from flask_security import current_user
 from flask_security.utils import hash_password
 from werkzeug.utils import secure_filename
 from wtforms import PasswordField
+from pylatexenc.latexencode import unicode_to_latex as u2tex
 
 from app import db
 from .. import admin, models, tex_env
@@ -212,7 +213,7 @@ class QRView(MyBaseView):
     def group_pdf(self, group_id):
         group = models.Group.query.get_or_404(group_id)
         data = dict(
-            name=str(group),
+            name=u2tex(str(group)),
             type='group',
             qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_register', token=group.get_auth_token())}",
             url=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.index')}",
@@ -232,7 +233,7 @@ class QRView(MyBaseView):
             name=location.code,
             type='enter',
             qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_enter', location_code=location.code)}",
-            long_name=location.name_or_address,
+            long_name=u2tex(location.name_or_address),
             url=f"{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_enter', location_code=location.code)}",
 
         )
