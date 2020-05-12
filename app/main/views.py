@@ -155,8 +155,10 @@ def logout():
 
 @main.route('/client')
 def client_hub():
-    if get_client():
-        return render_template('client.html')
+    client = get_client()
+    if client:
+        qr_code = f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_login', token=client.get_auth_token())}"
+        return render_template('client.html', qr_code=qr_code)
     else:
         return redirect(url_for('main.index'))
 
