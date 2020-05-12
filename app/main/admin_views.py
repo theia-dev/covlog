@@ -192,20 +192,20 @@ class QRView(MyBaseView):
     @expose('group/<group_id>')
     def group(self, group_id):
         group = models.Group.query.get_or_404(group_id)
-        qr_code = url_for('main.quick_register', token=group.get_auth_token(), _external=True)
+        qr_code = f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_register', token=group.get_auth_token())}"
         return self.render('admin/qr_detail.html', qr_type='Group', qr_name=group.name, qr_code=qr_code,
                            pdf=url_for('qr.group_pdf', group_id=group_id))
 
     @expose('exit')
     def exit(self):
-        qr_code = url_for('main.log_exit', _external=True)
+        qr_code = f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_exit')}"
         return self.render('admin/qr_detail.html', qr_type='Exit', qr_name='all', qr_code=qr_code,
                            pdf=url_for('qr.exit_pdf'))
 
     @expose('location/<location_id>')
     def location(self, location_id):
         location = models.Location.query.get_or_404(location_id)
-        qr_code = url_for('main.log_enter', location_code=location.code, _external=True)
+        qr_code = f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.log_enter', location_code=location.code)}"
         return self.render('admin/qr_detail.html', qr_type='Location', qr_name=str(location), qr_code=qr_code,
                            pdf=url_for('qr.location_pdf', location_id=location_id))
 
