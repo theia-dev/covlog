@@ -1,6 +1,7 @@
 # COVLOG
 ## About
 COVLOG is a simple web tool to trace people across multiple locations with privacy in mind.
+It was developed at the [Chair of Materials Science and Nanotechnology](https://nano.tu-dresden.de) [TU Dresden](https://tu-dresden.de) in 2020 with python. Please be aware this tool is still in the beta stage. There could be missing functionality and undocumented behavior. If you have feedback to improve the service, please open an [issue](https://github.com/theia-dev/covlog/issues) or submit a [pull request](https://github.com/theia-dev/covlog/pull/new/master).
 
 ## Setup
 ### Preparation
