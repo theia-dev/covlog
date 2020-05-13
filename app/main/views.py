@@ -1,13 +1,15 @@
 import time
 from datetime import datetime, date
 
-from flask import current_app, flash
+from flask import current_app, flash, send_file
 from flask import redirect, url_for, request
 from flask import render_template
 from flask import session
+from pylatexenc.latexencode import unicode_to_latex as u2tex
 
 from app import db
 from . import main
+from .admin_views import get_qr_pdf
 from .. import models
 
 
@@ -159,6 +161,29 @@ def client_hub():
     if client:
         qr_code = f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_login', token=client.get_auth_token())}"
         return render_template('client.html', qr_code=qr_code)
+    else:
+        return redirect(url_for('main.index'))
+
+
+@main.route('/client/download')
+def client_download():
+    client = get_client()
+    if client:
+        data = dict(
+            type='client',
+            name=client.token,
+            extra_name=u2tex(client.name_or_mail),
+            group_token=client.group.token,
+            url=f"{current_app.config['SERVER_NAME_PDF']}{url_for('main.login')}",
+            qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.quick_login', token=client.get_auth_token())}"
+        )
+        pdf_file = get_qr_pdf(data)
+        if pdf_file:
+            return send_file(str(pdf_file.absolute()), mimetype='application/pdf',
+                             attachment_filename=f'covlog_{pdf_file.name}', as_attachment=True)
+        else:
+            flash('PDF build failed!', 'error')
+            return redirect(url_for('main.client_hub'))
     else:
         return redirect(url_for('main.index'))
 

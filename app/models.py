@@ -113,6 +113,15 @@ class Client(db.Model):
     def location_codes(self):
         return [loc.code for loc in self.group.locations]
 
+    @property
+    def name_or_mail(self):
+        if self.name:
+            return self.name
+        elif self.email:
+            return self.email
+        else:
+            return None
+
     def __repr__(self):
         if self.name:
             return self.name

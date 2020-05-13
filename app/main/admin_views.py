@@ -1,15 +1,18 @@
 import os
+import shutil
 import subprocess
 
-from flask import redirect, url_for, flash
+import qrcode
+from cityhash import CityHash32
 from flask import current_app, send_file
+from flask import redirect, url_for, flash
 from flask_admin import BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_security import current_user
 from flask_security.utils import hash_password
+from pylatexenc.latexencode import unicode_to_latex as u2tex
 from werkzeug.utils import secure_filename
 from wtforms import PasswordField
-from pylatexenc.latexencode import unicode_to_latex as u2tex
 
 from app import db
 from .. import admin, models, tex_env
@@ -17,31 +20,44 @@ from .. import admin, models, tex_env
 
 def get_qr_pdf(data):
 
+    hash_base = '|'.join([str(content) for content in data.values()])
     sec_name = secure_filename(data['name'])
-    build_folder = current_app.config['BUILD_FOLDER'] / f'{data["type"]}_{sec_name}'
+    build_folder = current_app.config['BUILD_FOLDER'] / f'{data["type"]}' / f'{sec_name}_{CityHash32(hash_base):x}'
     final_pdf = build_folder / f"{sec_name}.pdf"
     if final_pdf.is_file():
         return final_pdf
     build_folder.mkdir(exist_ok=True, parents=True)
 
-    template = tex_env.get_template(f'{data["type"]}.tex')
+    qr_raw = qrcode.QRCode()
+    qr_raw.add_data(data['qr_code'])
+    qr_raw.make(fit=True)
+    data['qr_binary'] = ''.join([''.join([str(int(value)) for value in row]) for row in qr_raw.modules])
+    data['qr_modules_count'] = qr_raw.modules_count
+    data['qr_error'] = qr_raw.error_correction
 
+    template = tex_env.get_template(f'{data["type"]}.tex')
+    aux_template = tex_env.get_template('quick.aux')
     content = template.render(**data)
+    aux_content = aux_template.render(**data)
 
     build_file = (build_folder / f"{sec_name}.tex")
     build_file.write_text(content)
+    aux_file = (build_folder / f"{sec_name}.aux")
+    aux_file.write_text(aux_content)
     last_wd = os.curdir
     os.chdir(build_file.parent)
 
-    for _ in range(2):
-        result = subprocess.call(['xelatex', '--interaction=batchmode', '--halt-on-error',
-                                  '--file-line-error', build_file.name], stdout=open(os.devnull, 'wb'))
-        if result is not 0:
-            current_app.logger.error(f'xelatex failed for {data["type"]}')
-            return None
+    result = subprocess.call(['xelatex', '--interaction=batchmode', '--halt-on-error',
+                              '--file-line-error', build_file.name], stdout=open(os.devnull, 'wb'))
+    if result is not 0:
+        current_app.logger.error(f'xelatex failed for {data["type"]}')
+        return None
 
     os.chdir(last_wd)
     if final_pdf.is_file():
+        for folder in build_folder.parent.glob(f'{sec_name}_*'):
+            if folder.name != build_folder.name:
+                shutil.rmtree(folder)
         return final_pdf
     else:
         return None

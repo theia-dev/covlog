@@ -12,3 +12,5 @@ itsdangerous
 Jinja2
 python-telegram-handler
 pylatexenc
+cityhash
+qrcode
