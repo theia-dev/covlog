@@ -68,6 +68,8 @@ class Client(db.Model):
     name = db.Column(db.Unicode(255))
     email = db.Column(db.Unicode(255))
     active = db.Column(db.Boolean(), default=True)
+    direct_traces = db.relationship('Trace', secondary='direct_trace_client', back_populates='direct_clients')
+    indirect_traces = db.relationship('Trace', secondary='indirect_trace_client', back_populates='indirect_clients')
     created = db.Column(db.TIMESTAMP, default=datetime.today)
     events = db.relationship('Event', backref='client')
 
@@ -225,3 +227,28 @@ class Event(db.Model):
     date_out = db.Column(db.DateTime, default=None)
     active = db.Column(db.Boolean, default=True)
     expired = db.Column(db.Boolean, default=False)
+
+
+class Trace(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(8), default=partial(create_token, length=8))
+    direct_clients = db.relationship('Client', secondary='direct_trace_client', back_populates='direct_traces')
+    indirect_clients = db.relationship('Client', secondary='indirect_trace_client', back_populates='indirect_traces')
+    root_client = db.Column(db.Integer, db.ForeignKey('client.id'))
+    root_location = db.Column(db.Integer, db.ForeignKey('location.id'))
+    start = db.Column(db.DateTime)
+    stop = db.Column(db.DateTime)
+    length = db.Column(db.Integer, default=48)  # hours
+    active = db.Column(db.Boolean, default=False)
+
+
+class DirectTraceClient(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    trace_id = db.Column(db.Integer, db.ForeignKey('trace.id'))
+    client_id = db.Column(db.Integer, db.ForeignKey('client.id'))
+
+
+class IndirectTraceClient(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    trace_id = db.Column(db.Integer, db.ForeignKey('trace.id'))
+    client_id = db.Column(db.Integer, db.ForeignKey('client.id'))

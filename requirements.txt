@@ -3,6 +3,7 @@ Flask-Admin
 Flask-BabelEx
 Flask-Bootstrap
 Flask-Login
+Flask-Migrate
 Flask-Moment
 Flask-QRcode
 Flask-Security

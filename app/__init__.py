@@ -12,6 +12,7 @@ from flask_moment import Moment
 from flask_qrcode import QRcode
 from flask_security import Security, SQLAlchemyUserDatastore
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 from config import Config
 
@@ -21,6 +22,7 @@ bootstrap = Bootstrap()
 moment = Moment()
 db = SQLAlchemy()
 qr = QRcode()
+migrate = Migrate()
 admin = Admin(template_mode='bootstrap4')
 security = None
 
@@ -79,7 +81,7 @@ def create_app():
     moment.init_app(app)
     db.init_app(app)
     qr.init_app(app)
-
+    migrate.init_app(app, db)
     from .models import Role, User
     user_data_store = SQLAlchemyUserDatastore(db, User, Role)
     security = Security(app, user_data_store)
