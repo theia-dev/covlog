@@ -252,3 +252,29 @@ def log_exit():
             db.session.commit()
         return redirect(url_for('main.log_event'))
     return redirect(url_for('main.log_event', show_exit=True))
+
+
+@main.route('/trace/<token>')
+def trace_detail(token):
+    client = get_client()
+    if not client:
+        flash('You need to be registered!', 'warning')
+        return redirect(url_for('main.index'))
+    trace = models.Trace.query.filter_by(token=token).first()
+    if trace is None:
+        if client:
+            flash(f'The requested trace report does not exist!')
+        return redirect(url_for('main.index'))
+    if client in trace.direct_clients:
+        kind = 'You directly overlapped with the incident in this trace report.'
+    elif client in trace.indirect_clients:
+        kind = 'You where at a location after the incident in this trace report.'
+    elif client == trace.root_client:
+        kind = 'You are at the root of this trace report.'
+    else:
+        kind = None
+    if kind:
+        return render_template('trace.html', trace=trace, kind=kind)
+    else:
+        flash('You are not involved in that trace report!')
+        return redirect(url_for('main.client_hub'))

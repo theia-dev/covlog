@@ -45,3 +45,30 @@
     </div>
 </div>
 {% endmacro %}
+
+{% macro trace_ul_full(tr, kind) %}
+    <ul>
+        <li>Token: {{ tr.token }}</li>
+        {% if tr.contact %}
+            <li>Contact: <a href="mailto:{{ tr.contact_mail }}">{{ tr.contact }}</a></li>
+        {% endif %}
+        <li>From {{ tr.start|nice_date }} until {{ tr.stop|nice_date }} (+{{ tr.length }}h)</li>
+    </ul>
+        {% if tr.description %}
+            <p>{{ tr.description }}</p>
+        {% endif %}
+{% endmacro %}
+
+{% macro trace_ul_light(tr, kind) %}
+    {% if tr.active %}
+        {% if tr.title %}
+            <p><a href="{{ url_for('main.trace_detail', token=tr.token) }}"><b>{{ tr.title }}</b></a> ({{ tr.token }})<br>
+            {{ kind }}</p>
+        {% else %}
+            <p><a href="{{ url_for('main.trace_detail', token=tr.token) }}"><b>{{ tr.token }}</b></a><br>
+            {{ kind }}</p>
+        {% endif %}
+
+
+    {% endif %}
+{% endmacro %}

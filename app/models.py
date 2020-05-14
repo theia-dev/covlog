@@ -72,6 +72,7 @@ class Client(db.Model):
     indirect_traces = db.relationship('Trace', secondary='indirect_trace_client', back_populates='indirect_clients')
     created = db.Column(db.TIMESTAMP, default=datetime.today)
     events = db.relationship('Event', backref='client')
+    trace_root = db.relationship('Trace', backref='client')
 
     def is_present(self, get_location=False):
         if self.events:
@@ -110,6 +111,17 @@ class Client(db.Model):
                 value += f' ({client.name})'
             c_list.append([client.id, value])
         return c_list
+
+    @property
+    def traces(self):
+        return self.trace_root + self.direct_traces + self.indirect_traces
+
+    @property
+    def has_traces(self):
+        for trace in self.traces:
+            if trace.active:
+                return True
+        return False
 
     @property
     def location_codes(self):
@@ -177,6 +189,7 @@ class Location(db.Model):
     groups = db.relationship('Group', secondary='group_location', back_populates='locations')
     events = db.relationship('Event', backref='location')
     created = db.Column(db.TIMESTAMP, default=datetime.today)
+    trace_root = db.relationship('Trace', backref='location')
 
     @property
     def usage(self):
@@ -228,10 +241,17 @@ class Event(db.Model):
     active = db.Column(db.Boolean, default=True)
     expired = db.Column(db.Boolean, default=False)
 
+    def __repr__(self):
+        return f'{self.client}_{self.location.code}_{self.date_in}'
+
 
 class Trace(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(8), default=partial(create_token, length=8))
+    title = db.Column(db.Unicode(255))
+    description = db.Column(db.UnicodeText)
+    contact = db.Column(db.Unicode(255))
+    contact_mail = db.Column(db.Unicode(255))
     direct_clients = db.relationship('Client', secondary='direct_trace_client', back_populates='direct_traces')
     indirect_clients = db.relationship('Client', secondary='indirect_trace_client', back_populates='indirect_traces')
     root_client = db.Column(db.Integer, db.ForeignKey('client.id'))
@@ -240,6 +260,9 @@ class Trace(db.Model):
     stop = db.Column(db.DateTime)
     length = db.Column(db.Integer, default=48)  # hours
     active = db.Column(db.Boolean, default=False)
+
+    def __repr__(self):
+        return self.token
 
 
 class DirectTraceClient(db.Model):

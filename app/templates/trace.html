@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% import 'macros.html' as helper %}
+{% block content %}
+    <div class="content-wrapper">
+        <div class="content">
+            {% if trace.title %}
+                <h2 class="content-head is-center">{{ trace.title }}</h2>
+            {% else %}
+                <h2 class="content-head is-center">Trace {{ trace.token }}</h2>
+            {% endif %}
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="is-center noprint">
+                        <div class="pure-u-1-2">
+                            {% for category, message in messages %}
+                                <div class="pure-alert pure-alert-{{ category }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="pure-g client-info">
+                <div class="pure-u-1 noprint is-center">
+                    <p>{{ kind }}</p>
+                </div>
+
+                <div class="l-box pure-u-1 pure-u-lg-1-2 ">
+                    {{ helper.trace_ul_full(trace) }}
+                </div>
+
+                <div class="l-box pure-u-1 noprint" style="text-align: center">
+                    <a href="{{ url_for('main.index') }}" class="pure-button pure-button-client">Home</a>
+                    <a href="{{ url_for('main.client_hub') }}" class="pure-button pure-button-client">Client Area</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

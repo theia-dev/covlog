@@ -1,6 +1,8 @@
 import os
 import shutil
 import subprocess
+from collections import defaultdict
+from datetime import datetime, timedelta
 
 import qrcode
 from cityhash import CityHash32
@@ -19,7 +21,6 @@ from .. import admin, models, tex_env
 
 
 def get_qr_pdf(data):
-
     hash_base = '|'.join([str(content) for content in data.values()])
     sec_name = secure_filename(data['name'])
     build_folder = current_app.config['BUILD_FOLDER'] / f'{data["type"]}' / f'{sec_name}_{CityHash32(hash_base):x}'
@@ -61,6 +62,39 @@ def get_qr_pdf(data):
         return final_pdf
     else:
         return None
+
+
+def build_trace(trace):
+    if trace.client:
+        client_events = models.Event.query.filter_by(client=trace.client).filter(models.Event.date_out >= trace.start).filter(models.Event.date_in <= trace.stop)
+        direct_events = []
+        indirect_events = []
+        indirect_locations = defaultdict(lambda: dict(start=datetime.max, stop=datetime.min))
+        for event in client_events:
+            # started before
+            direct_events += models.Event.query.filter(models.Event.date_in <= event.date_in,
+                                                       models.Event.date_out >= event.date_in)
+            # started during
+            direct_events += models.Event.query.filter(models.Event.date_in > event.date_in,
+                                                       models.Event.date_in <= event.date_out)
+            indirect_locations[event.location_id]['start'] = min(event.date_in,
+                                                                 indirect_locations[event.location_id]['start'])
+            indirect_locations[event.location_id]['stop'] = max(event.date_out,
+                                                                indirect_locations[event.location_id]['stop'])
+
+        trace.direct_clients = list(set([de.client for de in direct_events]).difference([trace.client]))
+        for location_id, value in indirect_locations.items():
+            value['stop'] += timedelta(hours=trace.length)
+            # started before
+            indirect_events += models.Event.query.filter_by(location_id=location_id).filter(
+                models.Event.date_in <= value['start'],
+                models.Event.date_out >= value['start'])
+            # started during
+            indirect_events += models.Event.query.filter_by(location_id=location_id).filter(
+                models.Event.date_in > value['start'],
+                models.Event.date_in <= value['stop'])
+        trace.indirect_clients = list(set([ie.client for ie in indirect_events]).difference(trace.direct_clients + [trace.client]))
+    return trace
 
 
 class MyModelView(ModelView):
@@ -113,7 +147,6 @@ class UserView(MyModelView):
                 raise PermissionError('You are not allowed to alter this user!')
 
         if form.password2.data is not None:
-            print(form.password2.data)
             user.password = hash_password(form.password2.data)
 
 
@@ -150,7 +183,6 @@ class SuperUserView(MyModelView):
                 raise PermissionError('You are not allowed to alter this user!')
 
         if form.password2.data is not None:
-            print(form.password2.data)
             user.password = hash_password(form.password2.data)
 
 
@@ -183,10 +215,6 @@ class ToolView(MyBaseView):
     @expose('/')
     def index(self):
         return redirect(url_for('admin.index'))
-
-    @expose('add_admin')
-    def add_admin(self):
-        return self.render('admin/add_admin.html')
 
 
 class ReportView(MyBaseView):
@@ -278,10 +306,39 @@ class QRView(MyBaseView):
             return redirect(url_for('qr.exit'))
 
 
+class TraceView(MyModelView):
+    form_columns = [
+        'token',
+        'client',
+        'location',
+        'title',
+        'description',
+        'contact',
+        'contact_mail',
+        'start',
+        'stop',
+        'length',
+        'active',
+    ]
+
+    def on_model_change(self, form, trace, is_created):
+        if trace.location and trace.client:
+            raise AssertionError('A trace has to be based either on a client or a location!')
+        if trace.start is None:
+            raise AssertionError('A trace need a start time.')
+        if trace.start is not None:
+            if trace.start > trace.stop:
+                raise AssertionError('Start time needs to be before stop time.')
+        if trace.length < 0:
+            raise AssertionError('Length should not be negative.')
+        trace = build_trace(trace)
+
+
 admin.add_view(ReportView(name='Reports', endpoint='report'))
 admin.add_view(QRView(name='QR', endpoint='qr'))
 admin.add_view(ToolView(name='Tools', endpoint='tool'))
 
+admin.add_view(TraceView(models.Trace, db.session))
 admin.add_view(MyModelView(models.Group, db.session))
 admin.add_view(MyModelView(models.Location, db.session))
 admin.add_view(MyModelView(models.Client, db.session))

@@ -9,4 +9,4 @@ def join_list(in_list):
 
 @main.app_template_filter()
 def nice_date(date):
-    return Markup(date.strftime("%A, %d. %B %Y %I:%M%p"))
+    return Markup(date.strftime("%d. %B %Y %I:%M%p"))
