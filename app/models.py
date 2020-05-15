@@ -138,7 +138,7 @@ class Client(db.Model):
 
     def __repr__(self):
         if self.name:
-            return self.name
+            return f'{self.name} ({self.token})'
         else:
             return self.token
 
@@ -260,6 +260,13 @@ class Trace(db.Model):
     stop = db.Column(db.DateTime)
     length = db.Column(db.Integer, default=48)  # hours
     active = db.Column(db.Boolean, default=False)
+
+    @property
+    def long_name(self):
+        if self.title:
+            return f"{self.title} ({self.token})"
+        else:
+            return self.token
 
     def __repr__(self):
         return self.token

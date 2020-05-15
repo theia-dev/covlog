@@ -266,10 +266,10 @@ def trace_detail(token):
             flash(f'The requested trace report does not exist!')
         return redirect(url_for('main.index'))
     if client in trace.direct_clients:
-        kind = 'You directly overlapped with the incident in this trace report.'
+        kind = 'You are directly affected as at leased one visit overlapped with the incident in this report.'
     elif client in trace.indirect_clients:
-        kind = 'You where at a location after the incident in this trace report.'
-    elif client == trace.root_client:
+        kind = f'You were indirectly affected by visiting a location during its { trace.length }h cool down period.'
+    elif client == trace.client:
         kind = 'You are at the root of this trace report.'
     else:
         kind = None

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plaintext Report ({{ trace.token }})</title>
+</head>
+<body>
+
+<h1>{{ trace.long_name }}</h1>
+
+<p>{{ trace.start|nice_date }} - {{ trace.stop|nice_date }} (+{{ trace.length }}h)</p>
+{% if trace.contact %}
+    <p>The response is coordinated by <a href="mailto:{{ trace.contact_mail }}">{{ trace.contact }}</a>
+        ({{ trace.contact_mail }}).</p>
+{% endif %}
+<p>{{ trace.description }}</p>
+<p>To quickly check if you are affected visit <a href="{{ url }}">{{ url }}</a> on your registered device.</p>
+{% if trace.direct_clients %}
+    <p>The following clients are directly affected:</p>
+    <ul>
+        {% for cl in trace.direct_clients %}
+            <li>{{ cl.token }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% if trace.indirect_clients %}
+    <p>The following clients are indirectly affected by visiting a location during its {{ trace.length }}h cool down
+        period:</p>
+    <ul>
+        {% for cl in trace.indirect_clients %}
+            <li>{{ cl.token }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+</body>
+</html>

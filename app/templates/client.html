@@ -46,10 +46,10 @@
                        {{ helper.trace_ul_light(tr, 'You are at the root of this trace report.') }}
                     {% endfor %}
                     {% for tr in client.direct_traces %}
-                       {{ helper.trace_ul_light(tr, 'You directly overlapped with the incident in this trace report.') }}
+                       {{ helper.trace_ul_light(tr, 'You are directly affected as at leased one visit overlapped with the incident in this report.') }}
                     {% endfor %}
                     {% for tr in client.indirect_traces %}
-                       {{ helper.trace_ul_light(tr, 'You where at a location after the incident in this trace report.') }}
+                       {{ helper.trace_ul_light(tr, 'You were indirectly affected by visiting a location during its cool down period.') }}
                     {% endfor %}
                 </div>
                 {% endif %}

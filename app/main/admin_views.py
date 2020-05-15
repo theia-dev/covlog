@@ -141,6 +141,12 @@ class UserView(MyModelView):
             'active'
         ]
 
+    def is_visible(self):
+        if current_user.has_role('superuser'):
+            return False
+        else:
+            return True
+
     def on_model_change(self, form, user, is_created):
         if not current_user.has_role('superuser'):
             if current_user.id != user.id:
@@ -215,15 +221,6 @@ class ToolView(MyBaseView):
     @expose('/')
     def index(self):
         return redirect(url_for('admin.index'))
-
-
-class ReportView(MyBaseView):
-    @expose('/')
-    def index(self):
-        return self.render('admin/report.html',
-                           c_list=models.Client.get_list(),
-                           l_list=models.Location.get_list(),
-                           g_list=models.Group.get_list())
 
 
 class QRView(MyBaseView):
@@ -307,6 +304,9 @@ class QRView(MyBaseView):
 
 
 class TraceView(MyModelView):
+    can_view_details = True
+    column_exclude_list = ['description', 'contact_mail', 'length']
+
     form_columns = [
         'token',
         'client',
@@ -321,6 +321,38 @@ class TraceView(MyModelView):
         'active',
     ]
 
+    details_template = "admin/details_trace.html"
+
+    @expose('report/plaintext/<token>')
+    def plaintext_report(self, token):
+        trace = models.Trace.query.filter_by(token=token).first()
+        if not trace:
+            flash("Can't create report for unknown trace!")
+            return redirect(url_for('trace.index_view'))
+        url = f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.trace_detail', token=trace.token)}"
+        return self.render('admin/plaintext_report.html', trace=trace, url=url)
+
+    @expose('report/pdf/<token>')
+    def pdf_report(self, token):
+        trace = models.Trace.query.filter_by(token=token).first()
+        if trace is None:
+            flash("Can't create report for unknown trace!")
+            return redirect(url_for('trace.index_view'))
+        data = dict(
+            type='trace',
+            name=trace.long_name,
+            trace=trace,
+            qr_code=f"https://{current_app.config['SERVER_NAME_PDF']}{url_for('main.trace_detail', token=trace.token)}",
+            url=f"{current_app.config['SERVER_NAME_PDF']}{url_for('main.trace_detail', token=trace.token)}"
+        )
+        pdf_file = get_qr_pdf(data)
+        if pdf_file:
+            return send_file(str(pdf_file.absolute()), mimetype='application/pdf',
+                             attachment_filename=f'covlog_report_{pdf_file.name}', as_attachment=True)
+        else:
+            flash(f'PDF build failed for {trace.token}!', 'error')
+            return redirect(url_for('trace.details_view', id=trace.id))
+
     def on_model_change(self, form, trace, is_created):
         if trace.location and trace.client:
             raise AssertionError('A trace has to be based either on a client or a location!')
@@ -334,14 +366,13 @@ class TraceView(MyModelView):
         trace = build_trace(trace)
 
 
-admin.add_view(ReportView(name='Reports', endpoint='report'))
 admin.add_view(QRView(name='QR', endpoint='qr'))
 admin.add_view(ToolView(name='Tools', endpoint='tool'))
 
 admin.add_view(TraceView(models.Trace, db.session))
-admin.add_view(MyModelView(models.Group, db.session))
-admin.add_view(MyModelView(models.Location, db.session))
-admin.add_view(MyModelView(models.Client, db.session))
-admin.add_view(LimitedView(models.Event, db.session))
-admin.add_view(UserView(models.User, db.session))
-admin.add_view(SuperUserView(models.User, db.session, name='SuperUser', endpoint='superuser'))
+admin.add_view(MyModelView(models.Group, db.session, category='CL DB'))
+admin.add_view(MyModelView(models.Location, db.session, category='CL DB'))
+admin.add_view(MyModelView(models.Client, db.session, category='CL DB'))
+admin.add_view(LimitedView(models.Event, db.session, category='CL DB'))
+admin.add_view(UserView(models.User, db.session, name='Admins'))
+admin.add_view(SuperUserView(models.User, db.session, name='Admins', endpoint='superuser'))

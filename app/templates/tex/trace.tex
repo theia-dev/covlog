@@ -1,0 +1,64 @@
+% Preamble
+\documentclass[12pt]{article}
+
+% Packages
+\usepackage{DejaVuSansCondensed}
+\renewcommand*\familydefault{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[nohead,nofoot,margin=10mm]{geometry}
+\usepackage{parskip}
+\usepackage{multicol}
+\usepackage[]{qrcode}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,
+    urlcolor=black,
+}
+
+% Document
+\begin{document}
+
+\title{\VAR{name}\vspace{-2cm}}
+\author{}
+\date{\VAR{trace.start|nice_date} - \VAR{trace.stop|nice_date} (+\VAR{trace.length}h)\vspace{-0.5em}}
+\maketitle
+\thispagestyle{empty}
+The response is coordinated by \textbf{\VAR{trace.contact}} (\VAR{trace.contact_mail}).\vspace{1em}
+
+\VAR{trace.description}\vspace{1em}
+
+\begin{minipage}{0.3\textwidth}
+\begin{center}
+    \qrcode*[height=4cm]{\VAR{ qr_code }}
+\end{center}
+\end{minipage}
+\hfill
+\begin{minipage}{0.7\textwidth}
+To quickly check if you are affected scan the QR code or\\ visit \href{\VAR{ qr_code }}{\VAR{ url }} on your registered device.
+\end{minipage}\vspace{1em}
+
+The following clients are directly affected:
+\BLOCK{ if trace.direct_clients }
+\begin{multicols}{5}
+\begin{itemize}
+\BLOCK{ for cl in trace.direct_clients}
+  \item \VAR{cl.token}
+\BLOCK{ endfor }
+\end{itemize}
+\end{multicols}
+\BLOCK{ endif }
+
+The following clients are indirectly affected by visiting a location during its 48h cool down period:
+\BLOCK{ if trace.indirect_clients }
+\begin{multicols}{5}
+\begin{itemize}
+\BLOCK{ for cl in trace.indirect_clients}
+  \item \VAR{cl.token}
+\BLOCK{ endfor }
+\end{itemize}
+\end{multicols}
+\BLOCK{ endif }
+
+\end{document}
