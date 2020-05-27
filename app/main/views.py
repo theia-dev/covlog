@@ -41,8 +41,12 @@ def log_event():
         location_code = request.args.get('location_code', type=str, default=None)
         log_limit = None
         if show_exit:
-            event = client.events[-1]
-            if event.active is True:
+            try:
+                event = client.events[-1]
+                can_exit = event.active
+            except IndexError:
+                can_exit = False
+            if can_exit is True:
                 log_limit = models.Location.query.get(event.location_id)
             else:
                 flash('You are not registered at a location at the moment.', ' warning')
